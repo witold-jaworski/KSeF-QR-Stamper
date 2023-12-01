@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Plik konfiguracyjny dla programu Stamper.exe  -->
+<config>
+
+	<!-- wszelkie współrzędne są w punktach, czyli 1/72 cala (to około 0.35mm). 
+	Polożenie jest podawane dla lewego górnego narożnika obszaru (prostokąta obejmujacego tekst, obrazu kodu QR)
+	Punkt 0,0 jest w lewym górnym narożniku strony.	Rozmiar pionowej strony A4 to 595x841 pt. 
+	Wartości w pt podawaj  zawsze jako liczby całkowite (tak ustawiłem parser tego pliku)
+	-->
+	
+	<label> <!-- Sczegóły etykiety z numerem KSeF na pierwszej stronie faktury -->
+		<x>320</x>
+		<y>45</y>
+		<font>Courier</font> <!-- Najlepiej uzywaj nazw standardowych fontów PDF: "Helvetica", "Courier", "Times-Roman", ... 
+							      Możliwe są także ich "mutacje": "Helvetica-Bold", "Courier-Bold", "Times-Bold". 
+								  Uwaga: jest różnica w nazwach czcionek pochylonych:. Są: "Courier-Oblique", "Helvetica-Oblique" i "Times-Italic" -->
+		<points>9</points> <!-- rozmiar czcionki -->
+	</label>
+	
+	<QR> <!-- Położenie i rozmiar kodu QR -->
+		<x>180</x>
+		<y>0</y>
+		<size>130</size> <!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
+	</QR>
+</config>

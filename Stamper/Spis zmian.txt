@@ -1,0 +1,14 @@
+2023-11-08
+Wersja: 1.0.0
+Ze wzglêdu na brak specyfikacji kodów QR w KSeF, na razie u¿ywa³em sta³ego tekstu.
+
+2023-12-16
+Wersja: 1.1.0
+Implementacja pierwszej specyfikacji kodów QR wg dokumentacji API KSeF v. 1.5. 
+
+2024-01-11
+wersja: 1.1.1
+Dodana para opcjonalnych argumentów [cfg "œcie¿ka do alternatywnego pliku konfiguracji"], która pozwala prze³¹czyæ siê na inny plik konfiguracji
+
+2024-01-12
+Poprawka modyfikacji z 2024-01-11: dodany sta³y tekst "tu go sprawdzisz" gdy w parametrach nie podano numeru KSeF

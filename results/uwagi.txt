@@ -1,0 +1,9 @@
+Serwer: test
+Numer KSeF faktury Invoice.xml: 5251469286-20231201-9884E98BA348-8F
+
+Poprawny skrót pliku (w Base64):
+Dr1u7CfKnYYdcHJrzY/xmW4eMHxkY9u5Lt/BceEzW4g= 
+
+Poprawny kod werifikacyjny: 
+https://ksef-test.mf.gov.pl/web/verify/5251469286-20231201-9884E98BA348-8F/Dr1u7CfKnYYdcHJrzY%2FxmW4eMHxkY9u5Lt%2FBceEzW4g%3D
+https://ksef-test.mf.gov.pl/web/verify/5251469286-20231201-9884E98BA348-8F/Dr1u7CfKnYYdcHJrzY%2FxmW4eMHxkY9u5Lt%2FBceEzW4g%3D

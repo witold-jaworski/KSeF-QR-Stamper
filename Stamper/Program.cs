@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Xml;
 using iText.IO.Font.Constants;
+using iText.IO.Font.Otf;
 using iText.IO.Image;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Action;
 using iText.Kernel.Pdf.Canvas;
 using iText.Layout;
 using iText.Layout.Element;
+using iText.Layout.Properties;
 using QRCoder;
 
 namespace Stamper
@@ -21,21 +26,23 @@ namespace Stamper
 		private const string ScreenHeader = "Program nanoszący kod QR i numer KSeF faktury na wskazany plik PDF. Wersja {0}. Autor: Witold Jaworski, 2023.\nUdostępniony na licencji AGPLv3 (por. https://www.gnu.org/licenses/agpl-3.0.txt).";
 
 		private const string UsageDetails = @"
-			Argumenty:
+			Argumenty (kolejność jest ważna!):
 
-			cert 'srcPDF' 'dstPDF' 'xmlFile' [KSeF] 
+			cert 'srcPDF' 'dstPDF' 'xmlFile' [KSeF] [cfg 'ścieżka do alterantywnego pliku *.xml z konfiguracją']
 
 			gdzie:
-			cert       - typ certyfikatu: prod|demo|test 
-			             ('prod' to certyfikat dla serwera produkcyjnego, 'test' - testowego).
+			cert       - typ serwera KSeF, do którego ma się odwoływać link w kodzie QR: prod|demo|test 
+			             ('prod' to serwer produkcyjny, 'test' - testowy).
 			'srcPDF'   - ścieżka do źródłowego pliku PDF faktury, który ma być zmodyfikowany.
 			'dstPDF'   - ścieżka do docelowego pliku PDF faktury, który ma powstać 
 			             (czyli do rezultat programu).
 			'xmlFile'  - ścieżka do pliku XML z faktura ustrukturyzowaną 
-			             (potrzebna do wyliczania tekstu na kod QR)
+			             (potrzebna do wyznaczenia tekstu kodowanego w QR)
 			KSeF       - opcjonalny. Numer KSeF, nadany fakturze 
 			             (pomiń, jeżeli nadajesz kod QR awaryjnie, bez dostępu do KSeF)
 			
+			cfg        - opcja, pozwalająca wskazać alternatywny plik z konfiguracją programu
+
 			Ścieżki można podawać jako absolutne lub względne (względem pliku *.exe). 
 			Można w nich stosować nazwy zmiennych środowiskowych, np %Temp% albo %AppData%
 			Jeżeli zawierają spacje - można je ująć w cudzysłów ('..').
@@ -46,9 +53,9 @@ namespace Stamper
 
 			";
 		
-		private const int PixelsPerQRdot = 10; //liczba piksli na elementarny kwadrat kodu QR
+		private const int PixelsPerQRdot = 10; //liczba pikseli na elementarny kwadrat kodu QR
 		private const string CertTypes = "prod,demo,test"; //dopuszczalne typy certyfikatów
-		private const string ConfigFileName = "Stamper.xml"; //Nazwa pliku z konfiguracją programu
+		private const string ConfigFileName = "Stamper.xml"; //ścieżka do domyślnego pliku z konfiguracją programu
 		private static readonly XmlDocument config = new XmlDocument();
 		static int Main(string[] args)
 		{
@@ -57,8 +64,8 @@ namespace Stamper
 			string dstPath = null;
 			string xmlPath;
 			//W poniższych liniach przypisania testowe:
-			string nrKSeF = "5251469286-20230208-2E5704-7B37EA-67"; 
-			string QRText = "https://www.podatki.gov.pl/ksef/API/common/QRCodeInvoiceViewer?NIP=1111111111&cert=2QfHxdbZx8XU1YWmQMOFmaNA46iXhUBgQOKFmUB7QPDw&sha2=o1WIn2qLtTyXPD5PI78/RmvV3at6dfbBmdibRd/pBjs=";
+			string nrKSeF = String.Empty; 
+			string QRText;
 
 			Console.WriteLine(String.Format(ScreenHeader, ProgramVersion()));
 			//Jak nie ma pierwszego argumentu - to przedstaw się i do widzenia.
@@ -70,18 +77,26 @@ namespace Stamper
 
 			try
 			{
+				var configPath = AppContext.BaseDirectory + ConfigFileName;
 				//Załaduj konfigurację:
-				config.Load(AppContext.BaseDirectory + ConfigFileName);
+				if (args.Length > 5) //Sprawdź, czy parametrrem "cfg" nie wskazano innego miejsca niż domyślne 
+				{
+					if (args[4] == "cfg") { configPath = FullPath(args[5]); }
+					if (args[5] == "cfg") { configPath = FullPath(args[6]); }
+				}
+
+				config.Load(configPath);
 
 				mode = args[0].ToLower();
 				if (!CertTypes.Contains(mode)) throw new ArgumentException(String.Format("Pierwszy argument ('{0}') może tylko mieć jedną z wartości: {1}", mode, CertTypes));
 				srcPath = FullPath(args[1]);
 				dstPath = FullPath(args[2]);
 				xmlPath = FullPath(args[3]);
-				if (args.Length > 4) nrKSeF = args[4];	
+				if (args.Length > 4 && args[4] != "cfg") nrKSeF = args[4];
 
+				QRText = CreateOnlineUrl(mode, xmlPath, nrKSeF);
 				Stamp(srcPath, dstPath, QRText, nrKSeF);
-				Console.ReadLine();
+				//Console.ReadLine();
 				return 0;
 			}
 			catch (Exception e) 
@@ -89,7 +104,7 @@ namespace Stamper
 				Console.WriteLine("Błąd podczas przetwarzania:");
 				Console.WriteLine(e);
 				//Nie zostawiaj śmieci po sobie!
-				if (dstPath!=null && File.Exists(dstPath)) File.Delete(dstPath);
+				//if (dstPath!=null && File.Exists(dstPath)) File.Delete(dstPath);
 				return -1;	
 			}
 
@@ -144,45 +159,86 @@ namespace Stamper
 			}
 		}
 
+		//zwraca skrót pliku, wg specyfikacji API
+		//Argumenty:
+		//	filePath: ścieżka do pliku, dla którego należy wyznaczyć skrót
+		private static string HashOf(string filePath) 
+		{
+			byte[] bytes = File.ReadAllBytes(filePath);
+			SHA256 sha = SHA256.Create();
+			byte[] hash = sha.ComputeHash(bytes);
+			return Uri.EscapeDataString(Convert.ToBase64String(hash));
+		}
+		//Tworzy url, który ma być zakodowany w QR:
+		private static string CreateOnlineUrl(string mode, string xmlPath, string nrKSeF)
+		{
+			var url = string.Empty;
+			switch (mode) 
+			{
+				case "prod":
+					url = "https://ksef.mf.gov.pl/";
+					break;
+				case "demo":
+					url = "https://ksef-demo.mf.gov.pl/";
+					break;
+				case "test":
+					url = "https://ksef-test.mf.gov.pl/";
+					break;
+			}
+			url += "web/verify/" + nrKSeF + "/" + HashOf(xmlPath);
+
+			return url;
+		}
+
 		//Przetwarza PDF
 		//Argumenty:
 		//	srcPath:	ścieżka do pliku PDF, który ma być "ostemplowany"
 		//	dstPath:	ścieżka do wynikowego pliku PDF (jest w tej procedurze tworzony)
 		//	QRtext:		wyrażenie, które ma być zakodowane w kodzie QR
-		//	nrKSeF:		numer KSeF (może być null)
-		private static void Stamp(string srcPath, string dstPath, string QRtext, string nrKSeF)
+		//	nrKSeF:		numer KSeF (może być "", gdy nieznany)
+		//	lastPage:	opcjonalny. True, gdy umieszczać na ostatniej stronie 
+		private static void Stamp(string srcPath, string dstPath, string QRtext, string nrKSeF, bool lastPage = false)
 		{
 			int x;
 			int y;
+			int page = 1;
 
 			ImageData code = CreateQRCode(QRtext);
 
 			PdfReader reader = new PdfReader(srcPath);
 			PdfWriter writer = new PdfWriter(dstPath);
 			PdfDocument pdf = new PdfDocument(reader, writer);
+			if (lastPage) page = pdf.GetNumberOfPages();
+			var box = pdf.GetPage(page).GetPageSize();
 
-			PdfCanvas overlay = new PdfCanvas(pdf, 1);
-			var box = pdf.GetPage(1).GetPageSize();
+			Document doc = new Document(pdf);
 			if (nrKSeF != null)
 			{
 				x = Int32.Parse(Cnf("label/x"));
 				y = Int32.Parse(Cnf("label/y"));
 				int points = Int32.Parse(Cnf("label/points"));
 				string font = Cnf("label/font");
+				string text = "Nr KSeF: " + (nrKSeF == "" ? "do sprawdzenia": nrKSeF);
 
-				overlay.BeginText();
-				overlay.SetFontAndSize(PdfFontFactory.CreateFont(font), points); //StandardFonts.HELVETICA = "Helvetica", inne to: "Courier", 
-				overlay.MoveText(x, box.GetHeight() - y - points); //w iText podajemy lewy DOLNY narożnik tekstu, a w pliku konfiguracji założyłem, że jest to lewy GÓRNY
-				overlay.ShowText("Nr KSeF: " + nrKSeF);
-				overlay.EndText();
+				Paragraph par = new Paragraph();
+				par.SetFont(PdfFontFactory.CreateFont(font));
+				par.SetFontSize(points);
+				par.SetFontColor(iText.Kernel.Colors.ColorConstants.BLUE);
+				par.SetUnderline();
+				par.SetFixedPosition(page, x, box.GetHeight() - y - points, text.Length * points);
+				par.Add(text);
+;				par.SetProperty(Property.ACTION, PdfAction.CreateURI(QRtext));
+				doc.Add(par);
+
 			}
-	
+
+			PdfCanvas overlay = new PdfCanvas(pdf, page);
 			x = Int32.Parse(Cnf("QR/x"));
 			y = Int32.Parse(Cnf("QR/y"));
 			float QRsize = Int32.Parse(Cnf("QR/size"));
 
 			overlay.AddImageFittedIntoRectangle(code, new iText.Kernel.Geom.Rectangle(x, box.GetHeight() - y - QRsize, QRsize, QRsize), false);
-
+			doc.Close();
 			pdf.Close();
 		}
 

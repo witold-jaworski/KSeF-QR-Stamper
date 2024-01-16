@@ -8,9 +8,9 @@
 	Wartości w pt podawaj  zawsze jako liczby całkowite (tak ustawiłem parser tego pliku)
 	-->
 	
-	<label> <!-- Sczegóły etykiety z numerem KSeF na pierwszej stronie faktury -->
-		<x>320</x>
-		<y>45</y>
+	<label> <!-- Sczegóły linku z numerem KSeF na pierwszej stronie faktury -->
+		<x>345</x>
+		<y>127</y>
 		<font>Courier</font> <!-- Najlepiej uzywaj nazw standardowych fontów PDF: "Helvetica", "Courier", "Times-Roman", ... 
 							      Możliwe są także ich "mutacje": "Helvetica-Bold", "Courier-Bold", "Times-Bold". 
 								  Uwaga: jest różnica w nazwach czcionek pochylonych:. Są: "Courier-Oblique", "Helvetica-Oblique" i "Times-Italic" -->
@@ -18,8 +18,8 @@
 	</label>
 	
 	<QR> <!-- Położenie i rozmiar kodu QR -->
-		<x>180</x>
-		<y>0</y>
-		<size>130</size> <!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
+		<x>480</x>
+		<y>135</y>
+		<size>110</size> <!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
 	</QR>
 </config>

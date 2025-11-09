@@ -1,30 +1,30 @@
 # KSeF Stamper
 
-Narzêdzie linii poleceñ, nanosz¹ce na dokumenty PDF faktur kody QR wymagane przez Krajowy System e-Faktur (KSeF). Przystosowane do wsadowego przetwarzania serii dokumentów. Stworzone dla .NET Framework w wersji 4.6.1 lub wy¿szych. Wykorzystuje popularn¹ bibliotekê iText.
-
-Spis treœci:
+NarzÄ™dzie linii poleceÅ„, nanoszÄ…ce na dokumenty PDF faktur kody QR wymagane przez Krajowy System e-Faktur (KSeF). Przystosowane do wsadowego przetwarzania serii dokumentÃ³w. Stworzone dla .NET Framework w wersji 4.6.1 lub wyÅ¼szych. Wykorzystuje popularnÄ… bibliotekÄ™ iText.
+Patrz [szczegÃ³Å‚owy opis](Stamper/Readme.md).
+Spis treÅ›ci:
 
 <!--TOC-->
 
-* [Argumenty linii poleceñ](#argumenty-linii-polecen)
+* [Argumenty linii poleceÅ„](#argumenty-linii-polecen)
 * [Plik konfiguracji programu](#plik-konfiguracji-programu)
-* [Format pliku wejœciowego](#format-pliku-wejsciowego)
+* [Format pliku wejÅ›ciowego](#format-pliku-wejsciowego)
 * [Kronikowanie "krok po kroku"](#kronikowanie-krok-po-kroku)
 
 <!--/TOC-->
 
-## Argumenty linii poleceñ
+## Argumenty linii poleceÅ„
 
-* **<œcie¿ka do pliku z danymi wejœciowymi>**.   
-  To jedyny wymagany argument. Œcie¿kê mo¿na tak¿e podawaæ wzglêdem po³o¿enia *Stamper.exe*. Opis formatu tego pliku - patrz [poni¿ej](#format-pliku-wejsciowego).
+* **<Å›cieÅ¼ka do pliku z danymi wejÅ›ciowymi>**.   
+  To jedyny wymagany argument. ÅšcieÅ¼kÄ™ moÅ¼na takÅ¼e podawaÄ‡ wzglÄ™dem poÅ‚oÅ¼enia *Stamper.exe*. Opis formatu tego pliku - patrz [poniÅ¼ej](#format-pliku-wejsciowego).
 * **config**   
-  Opcjonalny. Œcie¿ka do alternatywnego pliku \**.xml* z konfiguracj¹ programu. Mo¿e byæ podana wzglêdem *Stamper.exe*. Szczegó³y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
+  Opcjonalny. ÅšcieÅ¼ka do alternatywnego pliku \**.xml* z konfiguracjÄ… programu. MoÅ¼e byÄ‡ podana wzglÄ™dem *Stamper.exe*. SzczegÃ³Å‚y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
 * **options**   
-  Opcjonalny. Flagi programu. Je¿eli podajesz wiêcej ni¿ jedn¹ - rozdziel je œrednikiem. Aktualnie jest tylko jedna flaga - **verbose**. W³¹cza wyœwietlanie w konsoli komunikatu o przetworzeniu ka¿dej z faktur.
+  Opcjonalny. Flagi programu. JeÅ¼eli podajesz wiÄ™cej niÅ¼ jednÄ… - rozdziel je Å›rednikiem. Aktualnie jest tylko jedna flaga - **verbose**. WÅ‚Ä…cza wyÅ›wietlanie w konsoli komunikatu o przetworzeniu kaÅ¼dej z faktur.
 * **sid**   
-  Opcjonalny. Unikalny identyfikator tej sesji ("sid" to skrót od "Session ID"). Stworzony specjalnie dla komponentu œledz¹cego "krok po kroku" wykonywanie zadania wsadowego (por. [poni¿ej](#kronikowanie-krok-po-kroku)).
+  Opcjonalny. Unikalny identyfikator tej sesji ("sid" to skrÃ³t od "Session ID"). Stworzony specjalnie dla komponentu Å›ledzÄ…cego "krok po kroku" wykonywanie zadania wsadowego (por. [poniÅ¼ej](#kronikowanie-krok-po-kroku)).
 
-Przyk³adowe wywo³anie programu:
+PrzykÅ‚adowe wywoÅ‚anie programu:
 
 ```
 stamper.exe "..\\..\\invoice-list.txt" options verbose
@@ -32,20 +32,20 @@ stamper.exe "..\\..\\invoice-list.txt" options verbose
 
 ## Plik konfiguracji programu
 
-Domyœlnie plik konfiguracji programu nazywa siê **Stamper.xml** i jest umieszczony w tym samym folderze, co *Stamper.exe*. Za pomoc¹ argumentu linii poleceñ **config** mo¿esz wskazaæ inny plik.
+DomyÅ›lnie plik konfiguracji programu nazywa siÄ™ **Stamper.xml** i jest umieszczony w tym samym folderze, co *Stamper.exe*. Za pomocÄ… argumentu linii poleceÅ„ **config** moÅ¼esz wskazaÄ‡ inny plik.
 
-G³ówny element struktury XML konfiguracji nazywa siê **config**. Zawiera ustawienia ogólne, oraz dwie sekcje: **INVOICE** i **CERTIFICATE**, okreœlaj¹ce sposób umieszczenia odpowiednich kodów QR na fakturze. Na przyk³ad:
+GÅ‚Ã³wny element struktury XML konfiguracji nazywa siÄ™ **config**. Zawiera ustawienia ogÃ³lne, oraz dwie sekcje: **INVOICE** i **CERTIFICATE**, okreÅ›lajÄ…ce sposÃ³b umieszczenia odpowiednich kodÃ³w QR na fakturze. Na przykÅ‚ad:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Plik konfiguracyjny dla programu Stamper.exe  -->
 <config>
-	<!-- katalogi programu. NIGDY nie wstawiaj na koñcu "\\": -->
-	<source>..\\..\\Testy\\pdfs</source> <!-- katalog ze Ÿród³owymi plikami PDF -->
+	<!-- katalogi programu. NIGDY nie wstawiaj na koÅ„cu "\\": -->
+	<source>..\\..\\Testy\\pdfs</source> <!-- katalog ze ÅºrÃ³dÅ‚owymi plikami PDF -->
 	<result>..\\..\\Testy\\results</result> <!-- katalog na pliki "ostemplowane" kodam QR -->
-	<stepfiles>..\\..\\Testy\\logs</stepfiles> <!-- opcjonalny: katalog do szczegó³owej komunikacji z programem wywo³uj¹cym -->
+	<stepfiles>..\\..\\Testy\\logs</stepfiles> <!-- opcjonalny: katalog do szczegÃ³Å‚owej komunikacji z programem wywoÅ‚ujÄ…cym -->
 	
-	<!-- opcjonalnie: enkodowanie pliku wejœciowego (wpisz, je¿eli nie jest to utf-8) -->
+	<!-- opcjonalnie: enkodowanie pliku wejÅ›ciowego (wpisz, jeÅ¼eli nie jest to utf-8) -->
 	<encoding>windows-1250</encoding>
 
 	<INVOICE>
@@ -57,94 +57,94 @@ G³ówny element struktury XML konfiguracji nazywa siê **config**. Zawiera ustawie
 </config>
 ```
 
-Elementy obowi¹zkowe **config** to:
+Elementy obowiÄ…zkowe **config** to:
 
-* **source** to folder ze Ÿród³owymi plikami PDF ("do ostemplowania" kodami QR).
+* **source** to folder ze ÅºrÃ³dÅ‚owymi plikami PDF ("do ostemplowania" kodami QR).
 * **result** to folder na przetworzone ("ostemplowane") pliki PDF.
 * sekcje **INVOICE** i **CERTIFICATE**.
 
-Sk³adnia sekcji **INVOICE** i **CERTIFICATE** jest identyczna. Opisuj¹ po³o¿enie i rozmiar kodu QR na pierwszej lub ostatniej stronie dokumentu PDF. Poni¿ej kodu QR znajduje siê etykieta, o podanej w konfiguracji czcionce. Poni¿ej przyk³ad definicji wymaganego przez KSeF kodu QR:
+SkÅ‚adnia sekcji **INVOICE** i **CERTIFICATE** jest identyczna. OpisujÄ… poÅ‚oÅ¼enie i rozmiar kodu QR na pierwszej lub ostatniej stronie dokumentu PDF. PoniÅ¼ej kodu QR znajduje siÄ™ etykieta, o podanej w konfiguracji czcionce. PoniÅ¼ej przykÅ‚ad definicji wymaganego przez KSeF kodu QR:
 
 ```xml
-<!-- wszelkie wspó³rzêdne s¹ w punktach, czyli 1/72 cala (to oko³o 0.35mm). 
-	Polo¿enie jest podawane dla lewego górnego naro¿nika obszaru (prostok¹ta obejmujacego tekst, obrazu kodu QR)
-	Punkt 0,0 jest w lewym górnym naro¿niku strony.	Rozmiar pionowej strony A4 to 595x841 pt. 
-	Wartoœci w pt podawaj  zawsze jako liczby ca³kowite (tak ustawi³em parser tego pliku)
+<!-- wszelkie wspÃ³Å‚rzÄ™dne sÄ… w punktach, czyli 1/72 cala (to okoÅ‚o 0.35mm). 
+	PoloÅ¼enie jest podawane dla lewego gÃ³rnego naroÅ¼nika obszaru (prostokÄ…ta obejmujacego tekst, obrazu kodu QR)
+	Punkt 0,0 jest w lewym gÃ³rnym naroÅ¼niku strony.	Rozmiar pionowej strony A4 to 595x841 pt. 
+	WartoÅ›ci w pt podawaj  zawsze jako liczby caÅ‚kowite (tak ustawiÅ‚em parser tego pliku)
 	-->
 	<INVOICE>
-		<last-page>0</last-page> <!-- 0, je¿eli na pierwszej stronie, 1 je¿eli na ostatniej -->
+		<last-page>0</last-page> <!-- 0, jeÅ¼eli na pierwszej stronie, 1 jeÅ¼eli na ostatniej -->
 		<QR>
 			<!-- Kwadratowy kod QR -->
 			<x>80</x>
 			<y>65</y>
 			<size>110</size>
-			<!-- QR code jest kwadratem. Ten rozmiar obejmuje tak¿e 5% bia³e marginesy wokó³ kwadratu kodu -->
+			<!-- QR code jest kwadratem. Ten rozmiar obejmuje takÅ¼e 5% biaÅ‚e marginesy wokÃ³Å‚ kwadratu kodu -->
 		</QR>
 		<label>
 			<!-- Numer KSEF / OFFLINE -->
 			<font>Helvetica-Bold</font>
-			<!-- Najlepiej uzywaj nazw standardowych fontów PDF: "Helvetica", "Courier", "Times-Roman", ... 
-										Mo¿liwe s¹ tak¿e ich "mutacje": "Helvetica-Bold", "Courier-Bold", "Times-Bold". 
-										Uwaga: jest ró¿nica w nazwach czcionek pochylonych:. 
-										S¹: "Courier-Oblique", "Helvetica-Oblique" i "Times-Italic" -->
+			<!-- Najlepiej uzywaj nazw standardowych fontÃ³w PDF: "Helvetica", "Courier", "Times-Roman", ... 
+										MoÅ¼liwe sÄ… takÅ¼e ich "mutacje": "Helvetica-Bold", "Courier-Bold", "Times-Bold". 
+										Uwaga: jest rÃ³Å¼nica w nazwach czcionek pochylonych:. 
+										SÄ…: "Courier-Oblique", "Helvetica-Oblique" i "Times-Italic" -->
 			<points>8</points> 	<!-- rozmiar czcionki -->
 			<yoffset>15</yoffset>
-			<!-- dodatkowe przesuniêcie tekstu do do³u. Dostosuj do czcionki i ewentualnego zawiniêcia tekstu -->
+			<!-- dodatkowe przesuniÄ™cie tekstu do doÅ‚u. Dostosuj do czcionki i ewentualnego zawiniÄ™cia tekstu -->
 		</label>
 	</INVOICE>
 ```
 
-Sekcja **CERTIFICATE** opisuje drugi kod QR, który ma byæ umieszczany tylko dla faktu wystawionych w trybie OFFLINE. Jej sk³adnia jest identyczna jak **INVOICE**. (Pamiêtaj tylko, ¿e kody QR certyfikatów powinny byæ wiêksze, bo ich url s¹ du¿o d³u¿sze).
+Sekcja **CERTIFICATE** opisuje drugi kod QR, ktÃ³ry ma byÄ‡ umieszczany tylko dla faktu wystawionych w trybie OFFLINE. Jej skÅ‚adnia jest identyczna jak **INVOICE**. (PamiÄ™taj tylko, Å¼e kody QR certyfikatÃ³w powinny byÄ‡ wiÄ™ksze, bo ich url sÄ… duÅ¼o dÅ‚uÅ¼sze).
 
-## Format pliku wejœciowego
+## Format pliku wejÅ›ciowego
 
-Plik tekstowy, w którym ka¿da linia zawiera nastêpuj¹ce elementy rozdzielone znakiem tabulacji (ASCII #9):
+Plik tekstowy, w ktÃ³rym kaÅ¼da linia zawiera nastÄ™pujÄ…ce elementy rozdzielone znakiem tabulacji (ASCII #9):
 
 * **nazwa pliku pdf**   
-  Nazwa z rozszerzeniem, ale bez œcie¿ki. (Program zak³ada, ¿e jest to **source** z pliku konfiguracji).
+  Nazwa z rozszerzeniem, ale bez Å›cieÅ¼ki. (Program zakÅ‚ada, Å¼e jest to **source** z pliku konfiguracji).
 * **url linku do weryfikacji faktury**   
-  (np. uzyskany z odp. wywo³ania biblioteki KSeF.Client MF)
+  (np. uzyskany z odp. wywoÅ‚ania biblioteki KSeF.Client MF)
 * **numer KSEF**   
-  lub, gdy jest jeszcze nieznany, sta³y tekst "OFFLINE".
+  lub, gdy jest jeszcze nieznany, staÅ‚y tekst "OFFLINE".
 * Opcjonalnie: **url do certyfikatu Wystawcy faktury**   
-  Nale¿y go podaæ, je¿eli poprzedni element jest "OFFLINE". (Ten url mo¿na uzyskaæ np. z odp. wywo³ania biblioteki KSeF.Client MF).
+  NaleÅ¼y go podaÄ‡, jeÅ¼eli poprzedni element jest "OFFLINE". (Ten url moÅ¼na uzyskaÄ‡ np. z odp. wywoÅ‚ania biblioteki KSeF.Client MF).
 
-Przyk³adowa zawartoœæ:
+PrzykÅ‚adowa zawartoÅ›Ä‡:
 
 ```
-FA\_3\_Przyk³ad\_1.pdf	https://ksef-test.mf.gov.pl/client-app/invoice/9999999999/15-02-2026/X-wQflQVyRs1fImlI-xDPnWk1V37hys4O1lkx9iJbSA	9999999999-20230908-8BEF280C8D35-4D
-FA\_3\_Przyk³ad\_10.pdf	https://ksef-test.mf.gov.pl/client-app/invoice/9999999999/15-02-2026/s53ueEjp1GsSNo6JQsCrJqaAtZAol23eNPG8VHm5NQQ	9999999999-20230908-8BEF280C8D35-4D
-FA\_3\_Przyk³ad\_11.pdf	https://ksef-test.mf.gov.pl/client-app/invoice/9999999999/15-03-2026/Kcu1TWt83sGAdGnK9MW4zbQhUAriO3jTgc\_Uml456NE	OFFLINE	https://ksef-test.mf.gov.pl/client-app/certificate/Nip/1234567890/9999999999/2B10A313FDA65344/Kcu1TWt83sGAdGnK9MW4zbQhUAriO3jTgc\_Uml456NE/2r9v45n1QHbJKsJqJOFWLp\_TM67yOgMchIbw9Zc\_vY8FFz\_33obo-pSEJfCaMIXyPgIYjfQwH3WgGiWxX\_wd0A
+FA\_3\_PrzykÅ‚ad\_1.pdf	https://ksef-test.mf.gov.pl/client-app/invoice/9999999999/15-02-2026/X-wQflQVyRs1fImlI-xDPnWk1V37hys4O1lkx9iJbSA	9999999999-20230908-8BEF280C8D35-4D
+FA\_3\_PrzykÅ‚ad\_10.pdf	https://ksef-test.mf.gov.pl/client-app/invoice/9999999999/15-02-2026/s53ueEjp1GsSNo6JQsCrJqaAtZAol23eNPG8VHm5NQQ	9999999999-20230908-8BEF280C8D35-4D
+FA\_3\_PrzykÅ‚ad\_11.pdf	https://ksef-test.mf.gov.pl/client-app/invoice/9999999999/15-03-2026/Kcu1TWt83sGAdGnK9MW4zbQhUAriO3jTgc\_Uml456NE	OFFLINE	https://ksef-test.mf.gov.pl/client-app/certificate/Nip/1234567890/9999999999/2B10A313FDA65344/Kcu1TWt83sGAdGnK9MW4zbQhUAriO3jTgc\_Uml456NE/2r9v45n1QHbJKsJqJOFWLp\_TM67yOgMchIbw9Zc\_vY8FFz\_33obo-pSEJfCaMIXyPgIYjfQwH3WgGiWxX\_wd0A
 ```
 
 ## Kronikowanie "krok po kroku"
 
-Opcjonalnie program umo¿liwia raportowanie (logowanie) operacji "krok po kroku". Ta funkcja mo¿e byæ wykorzystywana przez program wywo³uj¹cy np. do wyœwietlania u¿ytkownikowi postêpu przetwarzania jakiejœ d³ugiej listy faktur.
+Opcjonalnie program umoÅ¼liwia raportowanie (logowanie) operacji "krok po kroku". Ta funkcja moÅ¼e byÄ‡ wykorzystywana przez program wywoÅ‚ujÄ…cy np. do wyÅ›wietlania uÅ¼ytkownikowi postÄ™pu przetwarzania jakiejÅ› dÅ‚ugiej listy faktur.
 
-Przed jej uruchomieniem nale¿y przygotowaæ folder na tymczasowe katalogi sesji programu. Wpisz jego œcie¿kê w pliku konfiguracyjnym w opcjonalnym elemencie **stepfiles**:
+Przed jej uruchomieniem naleÅ¼y przygotowaÄ‡ folder na tymczasowe katalogi sesji programu. Wpisz jego Å›cieÅ¼kÄ™ w pliku konfiguracyjnym w opcjonalnym elemencie **stepfiles**:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Plik konfiguracyjny dla programu Stamper.exe  -->
 <config>
 	...
-	<stepfiles>..\\..\\Testy\\logs</stepfiles> <!-- opcjonalny: katalog do szczegó³owej komunikacji z programem wywo³uj¹cym -->
+	<stepfiles>..\\..\\Testy\\logs</stepfiles> <!-- opcjonalny: katalog do szczegÃ³Å‚owej komunikacji z programem wywoÅ‚ujÄ…cym -->
 	...
 ```
 
-Gdy ta informacja jest wpisana, mo¿esz wywo³aæ program z dodatkowym argumentem sid ("session ID"). To nazwa tymczasowego katalogu na pliki kroków, który program wywo³uj¹cy utworzy³ w folderze **stepfiles**. Powinien to byæ jakiœ unikalny tekst/liczba. Dobrym kandydatem jest np. aktualna liczba milisekund od 1 stycznia 2025, czy coœ w tym rodzaju:
+Gdy ta informacja jest wpisana, moÅ¼esz wywoÅ‚aÄ‡ program z dodatkowym argumentem sid ("session ID"). To nazwa tymczasowego katalogu na pliki krokÃ³w, ktÃ³ry program wywoÅ‚ujÄ…cy utworzyÅ‚ w folderze **stepfiles**. Powinien to byÄ‡ jakiÅ› unikalny tekst/liczba. Dobrym kandydatem jest np. aktualna liczba milisekund od 1 stycznia 2025, czy coÅ› w tym rodzaju:
 
 ```
 stamper.exe "..\\..\\invoice-list.txt" sid 838338
 ```
 
-Tak wywo³any Stamper po przetworzeniu ka¿dej faktury wpisuje w folder *{stepfiles}\\838338\* ma³y plik tekstowy {Nazwa pliku faktury}.done*\* lub *{Nazwa pliku faktury}*<b>.fail</b>. W œrodku jest jedna-dwie linie tekstu, opisuj¹ca wynik przetworzenia tego dokumentu.
+Tak wywoÅ‚any Stamper po przetworzeniu kaÅ¼dej faktury wpisuje w folder *{stepfiles}\\838338\* maÅ‚y plik tekstowy {Nazwa pliku faktury}.done*\* lub *{Nazwa pliku faktury}*<b>.fail</b>. W Å›rodku jest jedna-dwie linie tekstu, opisujÄ…ca wynik przetworzenia tego dokumentu.
 
-Rozszerzenie \***.done** oznacza, ¿e faktura zosta³a poprawnie "ostemplowana".
+Rozszerzenie \***.done** oznacza, Å¼e faktura zostaÅ‚a poprawnie "ostemplowana".
 
-Rozszerzenie \***.fail** sygnalizuje, ¿e "ostemplowanie" siê nie powiod³o. (W œrodku pliku zapewne s¹ jakieœ szczegó³y).
+Rozszerzenie \***.fail** sygnalizuje, Å¼e "ostemplowanie" siÄ™ nie powiodÅ‚o. (W Å›rodku pliku zapewne sÄ… jakieÅ› szczegÃ³Å‚y).
 
-Program wywo³uj¹cy mo¿e w trakcie dzia³ania Stamper usuwaæ z katalogu tymczasowego pliki *.done* i *.fail*, które ju¿ odczyta³.
+Program wywoÅ‚ujÄ…cy moÅ¼e w trakcie dziaÅ‚ania Stamper usuwaÄ‡ z katalogu tymczasowego pliki *.done* i *.fail*, ktÃ³re juÅ¼ odczytaÅ‚.
 
-Gdy Stamper zakoñczy dzia³anie, program wywo³uj¹cy powinien usun¹æ ca³y katalog *sid* (w przyk³adzie powy¿ej to *\\838338*), aby nie pozostawiaæ po sobie "œmieci".
+Gdy Stamper zakoÅ„czy dziaÅ‚anie, program wywoÅ‚ujÄ…cy powinien usunÄ…Ä‡ caÅ‚y katalog *sid* (w przykÅ‚adzie powyÅ¼ej to *\\838338*), aby nie pozostawiaÄ‡ po sobie "Å›mieci".
 

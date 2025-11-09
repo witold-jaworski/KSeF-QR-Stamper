@@ -14,7 +14,7 @@ Spis treœci:
 <!--/TOC-->
 
 ## Argumenty linii poleceñ
-<a name="argumenty-linii-poleceñ"></a>
+<a name="argumenty-linii-polecen"></a>
 * **<œcie¿ka do pliku z danymi wejœciowymi>**.   
   To jedyny wymagany argument. Œcie¿kê mo¿na tak¿e podawaæ wzglêdem po³o¿enia *Stamper.exe*. Opis formatu tego pliku - patrz [poni¿ej](#format-pliku-wejsciowego).
 * **config**   
@@ -97,7 +97,7 @@ Sk³adnia sekcji **INVOICE** i **CERTIFICATE** jest identyczna. Opisuj¹ po³o¿enie
 Sekcja **CERTIFICATE** opisuje drugi kod QR, który ma byæ umieszczany tylko dla faktu wystawionych w trybie OFFLINE. Jej sk³adnia jest identyczna jak **INVOICE**. (Pamiêtaj tylko, ¿e kody QR certyfikatów powinny byæ wiêksze, bo ich url s¹ du¿o d³u¿sze).
 
 ## Format pliku wejœciowego
-<a name="format-pliku-wejœciowego"></a>
+<a name="format-pliku-wejsciowego"></a>
 Plik tekstowy, w którym ka¿da linia zawiera nastêpuj¹ce elementy rozdzielone znakiem tabulacji (ASCII #9):
 
 * **nazwa pliku pdf**   

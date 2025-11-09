@@ -14,7 +14,7 @@ Spis treœci:
 <!--/TOC-->
 
 ## Argumenty linii poleceñ
-
+<a name="argumenty-linii-poleceñ"></a>
 * **<œcie¿ka do pliku z danymi wejœciowymi>**.   
   To jedyny wymagany argument. Œcie¿kê mo¿na tak¿e podawaæ wzglêdem po³o¿enia *Stamper.exe*. Opis formatu tego pliku - patrz [poni¿ej](#format-pliku-wejsciowego).
 * **config**   
@@ -27,7 +27,7 @@ Spis treœci:
 Przyk³adowe wywo³anie programu:
 
 ```
-stamper.exe "..\\..\\invoice-list.txt" options verbose
+stamper.exe "..\..\invoice-list.txt" options verbose
 ```
 
 ## Plik konfiguracji programu
@@ -40,10 +40,10 @@ G³ówny element struktury XML konfiguracji nazywa siê **config**. Zawiera ustawie
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Plik konfiguracyjny dla programu Stamper.exe  -->
 <config>
-	<!-- katalogi programu. NIGDY nie wstawiaj na koñcu "\\": -->
-	<source>..\\..\\Testy\\pdfs</source> <!-- katalog ze Ÿród³owymi plikami PDF -->
-	<result>..\\..\\Testy\\results</result> <!-- katalog na pliki "ostemplowane" kodam QR -->
-	<stepfiles>..\\..\\Testy\\logs</stepfiles> <!-- opcjonalny: katalog do szczegó³owej komunikacji z programem wywo³uj¹cym -->
+	<!-- katalogi programu. NIGDY nie wstawiaj na koñcu "\": -->
+	<source>..\..\Testy\pdfs</source> <!-- katalog ze Ÿród³owymi plikami PDF -->
+	<result>..\..\Testy\results</result> <!-- katalog na pliki "ostemplowane" kodam QR -->
+	<stepfiles>..\..\Testy\logs</stepfiles> <!-- opcjonalny: katalog do szczegó³owej komunikacji z programem wywo³uj¹cym -->
 	
 	<!-- opcjonalnie: enkodowanie pliku wejœciowego (wpisz, je¿eli nie jest to utf-8) -->
 	<encoding>windows-1250</encoding>
@@ -97,7 +97,7 @@ Sk³adnia sekcji **INVOICE** i **CERTIFICATE** jest identyczna. Opisuj¹ po³o¿enie
 Sekcja **CERTIFICATE** opisuje drugi kod QR, który ma byæ umieszczany tylko dla faktu wystawionych w trybie OFFLINE. Jej sk³adnia jest identyczna jak **INVOICE**. (Pamiêtaj tylko, ¿e kody QR certyfikatów powinny byæ wiêksze, bo ich url s¹ du¿o d³u¿sze).
 
 ## Format pliku wejœciowego
-
+<a name="format-pliku-wejœciowego"></a>
 Plik tekstowy, w którym ka¿da linia zawiera nastêpuj¹ce elementy rozdzielone znakiem tabulacji (ASCII #9):
 
 * **nazwa pliku pdf**   
@@ -128,14 +128,14 @@ Przed jej uruchomieniem nale¿y przygotowaæ folder na tymczasowe katalogi sesji p
 <!-- Plik konfiguracyjny dla programu Stamper.exe  -->
 <config>
 	...
-	<stepfiles>..\\..\\Testy\\logs</stepfiles> <!-- opcjonalny: katalog do szczegó³owej komunikacji z programem wywo³uj¹cym -->
+	<stepfiles>..\..\Testy\logs</stepfiles> <!-- opcjonalny: katalog do szczegó³owej komunikacji z programem wywo³uj¹cym -->
 	...
 ```
 
 Gdy ta informacja jest wpisana, mo¿esz wywo³aæ program z dodatkowym argumentem sid ("session ID"). To nazwa tymczasowego katalogu na pliki kroków, który program wywo³uj¹cy utworzy³ w folderze **stepfiles**. Powinien to byæ jakiœ unikalny tekst/liczba. Dobrym kandydatem jest np. aktualna liczba milisekund od 1 stycznia 2025, czy coœ w tym rodzaju:
 
 ```
-stamper.exe "..\\..\\invoice-list.txt" sid 838338
+stamper.exe "..\..\invoice-list.txt" sid 838338
 ```
 
 Tak wywo³any Stamper po przetworzeniu ka¿dej faktury wpisuje w folder *{stepfiles}\\838338\* ma³y plik tekstowy {Nazwa pliku faktury}.done*\* lub *{Nazwa pliku faktury}*<b>.fail</b>. W œrodku jest jedna-dwie linie tekstu, opisuj¹ca wynik przetworzenia tego dokumentu.

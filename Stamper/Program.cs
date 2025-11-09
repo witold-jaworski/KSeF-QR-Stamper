@@ -5,43 +5,27 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Text;
 using System.Xml;
-using iText.IO.Font.Constants;
-using iText.IO.Font.Otf;
-using iText.IO.Image;
-using iText.Kernel.Font;
-using iText.Kernel.Geom;
-using iText.Kernel.Pdf;
-using iText.Kernel.Pdf.Action;
-using iText.Kernel.Pdf.Canvas;
-using iText.Layout;
-using iText.Layout.Element;
-using iText.Layout.Properties;
-using QRCoder;
+
 
 namespace Stamper
 {
-	internal class Program
+	internal partial class Program
 	{
-		private const string ScreenHeader = "Program nanoszący kod QR i numer KSeF faktury na wskazany plik PDF. Wersja {0}. Autor: Witold Jaworski, 2023.\nUdostępniony na licencji AGPLv3 (por. https://www.gnu.org/licenses/agpl-3.0.txt).";
+		private const string ScreenHeader = "Program nanoszący kody QR faktur KSeF na wskazane pliki PDF. Wersja {0}. Autor: Witold Jaworski, 2023-2025.\nUdostępniony na licencji AGPLv3 (por. https://www.gnu.org/licenses/agpl-3.0.txt).";
 
 		private const string UsageDetails = @"
-			Argumenty (kolejność jest ważna!):
+			Argumenty :
 
-			cert 'srcPDF' 'dstPDF' 'xmlFile' [KSeF] [cfg 'ścieżka do alterantywnego pliku *.xml z konfiguracją']
-
-			gdzie:
-			cert       - typ serwera KSeF, do którego ma się odwoływać link w kodzie QR: prod|demo|test 
-			             ('prod' to serwer produkcyjny, 'test' - testowy).
-			'srcPDF'   - ścieżka do źródłowego pliku PDF faktury, który ma być zmodyfikowany.
-			'dstPDF'   - ścieżka do docelowego pliku PDF faktury, który ma powstać 
-			             (czyli do rezultat programu).
-			'xmlFile'  - ścieżka do pliku XML z faktura ustrukturyzowaną 
-			             (potrzebna do wyznaczenia tekstu kodowanego w QR)
-			KSeF       - opcjonalny. Numer KSeF, nadany fakturze 
-			             (pomiń, jeżeli nadajesz kod QR awaryjnie, bez dostępu do KSeF)
+			'<cmd>' [config 'ścieżka do alterantywnego pliku *.xml z konfiguracją'] [options flaga[;flaga[;flaga]]] [sid 'identyfikator']
 			
-			cfg        - opcja, pozwalająca wskazać alternatywny plik z konfiguracją programu
+			gdzie:
+			<cmd>    - scieżka do plik poleceń. Opis formatu - patrz poniżej. To musi być pierwszy argument programu
+			config   - opcja, pozwalająca wskazać alternatywny plik *.xml z konfiguracją programu
+			options  - opcjonalna lista pojedynczych flag, rozdzielanych średnikami.
+			sid      - opcja, unikalny identyfikator tego przebiegu. Wykorzystywany przez program wywołujący 
+			           do śledzenia postępu zadania.
 
 			Ścieżki można podawać jako absolutne lub względne (względem pliku *.exe). 
 			Można w nich stosować nazwy zmiennych środowiskowych, np %Temp% albo %AppData%
@@ -49,27 +33,32 @@ namespace Stamper
 			
 			Przykładowe wywołanie:
 
-			Stamper.exe test '../../Inbox/FV1234 2023.pdf' '../../Stamped/FV1234 2023.pdf' '../../Accepted/FV1234 2023.xml' 5251469286-20230208-2E5704-7B37EA-67
+			Stamper.exe '../../Inbox/cmd.txt' options verbose sid 23493949
 
+			Plik poleceń programu to plik tekstowy rozdzielany znakami tabulacji, w którym każda linia zawiera polecenie 
+			'ostemplowania' kodami QR pojedynczego pliku PDF. Zawartość pojedynczej linii pliku poleceń:
+			<Plik PDF>	- nazwa pliku *.pdf, BEZ ścieżki (ta jest podana jako <source> w pliku konfiguracji)
+			<url QR I>	- tekst linku do zakodowania w kodzie QR faktury ('kod QR I')
+			<nr KSeF> | OFFLINE - numer KSeF nadany fakturze, lub stały tekst 'OFFLINE', gdy go nie ma.
+			[url QR II] - występuje tylko wtedy, gdy poprzedni element w wierszu = 'OFFLINE'.
+			              Tekst linku do zakodowania w kodzie QR certyfikatu ('kod QR II')
 			";
 		
-		private const int PixelsPerQRdot = 10; //liczba pikseli na elementarny kwadrat kodu QR
-		private const string CertTypes = "prod,demo,test"; //dopuszczalne typy certyfikatów
+		private const int PixelsPerQRdot = 10; //liczba pikseli na elementarny kwadrat kodu QR - im większa, tym lepsza "skalowalność" obrazu i nieco większy rozmiar pliku
 		private const string ConfigFileName = "Stamper.xml"; //ścieżka do domyślnego pliku z konfiguracją programu
+
+		//teksty, które występują w więcej niż jednym miejscu lepiej mieć jako stałe:
+		private const string F_VERBOSE = "verbose"; 
+
+		//Pola klasy (efektywnie - zmienne globalne)
 		private static readonly XmlDocument config = new XmlDocument();
+		private static Args progArgs;
+		private static StepfileLogger log;
 		static int Main(string[] args)
 		{
-			string mode;
-			string srcPath;
-			string dstPath = null;
-			string xmlPath;
-			//W poniższych liniach przypisania testowe:
-			string nrKSeF = String.Empty; 
-			string QRText;
-
 			Console.WriteLine(String.Format(ScreenHeader, ProgramVersion()));
 			//Jak nie ma pierwszego argumentu - to przedstaw się i do widzenia.
-			if (args.Length < 4)
+			if (args.Length < 1)
 			{
 				Console.WriteLine(UsageDetails.Replace("\t", " ").Replace("'","\"")); //tabulacje na spacje, aby powstał margines od krawędzi okna CLI
 				return -1;
@@ -77,38 +66,59 @@ namespace Stamper
 
 			try
 			{
-				var configPath = AppContext.BaseDirectory + ConfigFileName;
-				//Załaduj konfigurację:
-				if (args.Length > 5) //Sprawdź, czy parametrrem "cfg" nie wskazano innego miejsca niż domyślne 
+				progArgs = new Args(args); //Najpierw porzadek z argumentami:
+				//Uwzględnij ewentualną zmianę tej ścieżki w argumentach programu:
+				if(!progArgs.TryGetValue("config", out string	configPath))
+															configPath = AppContext.BaseDirectory + ConfigFileName;
+
+				if (!progArgs.TryGetValue("source", out string srcPath))
+															srcPath = Cnf("source");
+
+				if (!progArgs.TryGetValue("result", out string dstPath))
+															srcPath = Cnf("result");
+
+				//ewentualne opcje programu z linii poleceń (mogą być puste)
+				if (!progArgs.TryGetValue("options", out string options)) options = "";
+				options = options.Trim().ToLower();
+				
+				//ewentualny identyfikator sesji dla loggera:
+				if (!progArgs.TryGetValue("sid", out string sid)) sid = "";
+
+				//Załaduj konfigurację..
+				config.Load(FullPath(configPath));
+
+
+				//Zainicjalizuj logger
+				log = new StepfileLogger(Cnf("stepfiles",""), sid, Cnf("encoding", "utf-8"));
+
+				//Przetwórz plik z poleceniami:
+				srcPath = FullPath(srcPath);
+				dstPath = FullPath(dstPath);
+				var commands = File.ReadAllLines(FullPath(progArgs["cmd"]), Encoding.GetEncoding(Cnf("encoding", "utf-8")));
+				foreach (var line in commands)
 				{
-					if (args[4] == "cfg") { configPath = FullPath(args[5]); }
-					if (args[5] == "cfg") { configPath = FullPath(args[6]); }
+					var item = line.Split('\t'); //Pojedyncza linia, podzielona na elementy
+					try
+					{
+						Stamp($"{srcPath}\\{item[0]}", $"{dstPath}\\{item[0]}", item);
+						if (options.Contains(F_VERBOSE)) Console.WriteLine($"Oznaczono: {item[0]}\t{item[2]}");
+						log.LogSuccess(item[0],$"Oznaczono kodem QR dla '{item[2]}'");
+					}
+					catch (Exception e) 
+					{
+						log.LogFailure(item[0],e.Message);
+						Console.WriteLine($"\nBłąd podczas przetwarzania '{item[0]}':\n{e}\n{e.StackTrace}\n\nKontynuacja przetwarzania...\n");
+					}
 				}
-
-				config.Load(configPath);
-
-				mode = args[0].ToLower();
-				if (!CertTypes.Contains(mode)) throw new ArgumentException(String.Format("Pierwszy argument ('{0}') może tylko mieć jedną z wartości: {1}", mode, CertTypes));
-				srcPath = FullPath(args[1]);
-				dstPath = FullPath(args[2]);
-				xmlPath = FullPath(args[3]);
-				if (args.Length > 4 && args[4] != "cfg") nrKSeF = args[4];
-
-				QRText = CreateOnlineUrl(mode, xmlPath, nrKSeF);
-				Stamp(srcPath, dstPath, QRText, nrKSeF);
-				//Console.ReadLine();
+				if (options.Contains(F_VERBOSE)) Console.WriteLine("Przetwarzanie zakończone");
 				return 0;
 			}
 			catch (Exception e) 
 			{
-				Console.WriteLine("Błąd podczas przetwarzania:");
+				Console.WriteLine("Błąd krytyczny podczas przetwarzania:");
 				Console.WriteLine(e);
-				//Nie zostawiaj śmieci po sobie!
-				//if (dstPath!=null && File.Exists(dstPath)) File.Delete(dstPath);
 				return -1;	
 			}
-
-
 		}
 		//Zwraca numer wersji programu
 		private static string ProgramVersion()
@@ -118,144 +128,54 @@ namespace Stamper
 			return info.FileVersion.ToString();
 		}
 
-		//Zwraca zawsze pełną ścieżkę
+		//Zwraca zawsze pełną ścieżkę - do rozwinięcia ew. ścieżek względem położenia programu
 		//Argumenty:
 		//  path: ścieżka, która może być względna
 		//Ścieżki względne "urealnia" od folderu programu
 		static public string FullPath(string path)
 		{
+			if (path.EndsWith("\\")) path = path.Substring(0, path.Length - 1); //Usuń ewentualny backslash z końca
 			path = Environment.ExpandEnvironmentVariables(path);    //Aby można było stosować %temp%
-			if (System.IO.Path.IsPathRooted(path)) return path;
-			else return AppContext.BaseDirectory + path;
+			if (System.IO.Path.IsPathRooted(path) == false) path = AppContext.BaseDirectory + path;
+			return Path.GetFullPath(path);
 		}
 
+		//Lista argumentów programu
 		internal class Args : Dictionary<string, string> //Skrót, by nie pisał długich list argumentów
-		{ }
+		{
+			public Args(string[] values) : base()
+			{
+				this.Add("cmd", values[0]); //Ścieżka do pliku poleceń zawsze będzie pod kluczem "cmd"
+				//Pozostałe argumenty musza mieć nazwy:
+				for (int i = 1; i < values.Length - 1; i += 2)
+				{
+					this.Add(values[i], values[i + 1]);
+				}
+			}
+		}
 
 		//Skrót do odwoływania się do pól konfiguracji programu
 		//Argumenty:
 		//  xpath: wyrażenie xpath, wybierające pojedynczy element
+		//	defaultValue: jeżeli podany (!= null), funkcja nie zgłasza błędu tylko podaje tę wartość
 		//Procedura zgasza wyjątek, gdy nie znalazła wskazanego węzła
-		static private string Cnf(string xpath, Args args = null)
+		static private string Cnf(string xpath, string defaultValue = null)
 		{
 			var result = config.DocumentElement.SelectSingleNode(xpath);
 			if (result == null)
 			{
+				if (defaultValue == null)
+				{
 #pragma warning disable CS0618 // Jakiś błędne ostrzeżenie o przestarzałej klasie - a klasa podana jako następca nie istnieje
-				throw new ConfigurationException("Could not find node '" + xpath + "' in the configuration file ('" + ConfigFileName + "')");
+					throw new ConfigurationException("Could not find node '" + xpath + "' in the configuration file ('" + ConfigFileName + "')");
 #pragma warning restore CS0618 // Type or member is obsolete
+				}
+				else  
+					return defaultValue; 
 			}
 			else
-			{
-				string expr = result.InnerText;
-				if (args != null)
-				{
-					foreach (string key in args.Keys)
-					{
-						expr = expr.Replace(key, args[key]);
-					}
-				}
-				return expr;
-			}
+				return result.InnerText;
 		}
-
-		//zwraca skrót pliku, wg specyfikacji API
-		//Argumenty:
-		//	filePath: ścieżka do pliku, dla którego należy wyznaczyć skrót
-		private static string HashOf(string filePath) 
-		{
-			byte[] bytes = File.ReadAllBytes(filePath);
-			SHA256 sha = SHA256.Create();
-			byte[] hash = sha.ComputeHash(bytes);
-			return Uri.EscapeDataString(Convert.ToBase64String(hash));
-		}
-		//Tworzy url, który ma być zakodowany w QR:
-		private static string CreateOnlineUrl(string mode, string xmlPath, string nrKSeF)
-		{
-			var url = string.Empty;
-			switch (mode) 
-			{
-				case "prod":
-					url = "https://ksef.mf.gov.pl/";
-					break;
-				case "demo":
-					url = "https://ksef-demo.mf.gov.pl/";
-					break;
-				case "test":
-					url = "https://ksef-test.mf.gov.pl/";
-					break;
-			}
-			url += "web/verify/" + nrKSeF + "/" + HashOf(xmlPath);
-
-			return url;
-		}
-
-		//Przetwarza PDF
-		//Argumenty:
-		//	srcPath:	ścieżka do pliku PDF, który ma być "ostemplowany"
-		//	dstPath:	ścieżka do wynikowego pliku PDF (jest w tej procedurze tworzony)
-		//	QRtext:		wyrażenie, które ma być zakodowane w kodzie QR
-		//	nrKSeF:		numer KSeF (może być "", gdy nieznany)
-		//	lastPage:	opcjonalny. True, gdy umieszczać na ostatniej stronie 
-		private static void Stamp(string srcPath, string dstPath, string QRtext, string nrKSeF, bool lastPage = false)
-		{
-			int x;
-			int y;
-			int page = 1;
-
-			ImageData code = CreateQRCode(QRtext);
-
-			PdfReader reader = new PdfReader(srcPath);
-			PdfWriter writer = new PdfWriter(dstPath);
-			PdfDocument pdf = new PdfDocument(reader, writer);
-			if (lastPage) page = pdf.GetNumberOfPages();
-			var box = pdf.GetPage(page).GetPageSize();
-
-			Document doc = new Document(pdf);
-			if (nrKSeF != null)
-			{
-				x = Int32.Parse(Cnf("label/x"));
-				y = Int32.Parse(Cnf("label/y"));
-				int points = Int32.Parse(Cnf("label/points"));
-				string font = Cnf("label/font");
-				string text = "Nr KSeF: " + (nrKSeF == "" ? "do sprawdzenia": nrKSeF);
-
-				Paragraph par = new Paragraph();
-				par.SetFont(PdfFontFactory.CreateFont(font));
-				par.SetFontSize(points);
-				par.SetFontColor(iText.Kernel.Colors.ColorConstants.BLUE);
-				par.SetUnderline();
-				par.SetFixedPosition(page, x, box.GetHeight() - y - points, text.Length * points);
-				par.Add(text);
-;				par.SetProperty(Property.ACTION, PdfAction.CreateURI(QRtext));
-				doc.Add(par);
-
-			}
-
-			PdfCanvas overlay = new PdfCanvas(pdf, page);
-			x = Int32.Parse(Cnf("QR/x"));
-			y = Int32.Parse(Cnf("QR/y"));
-			float QRsize = Int32.Parse(Cnf("QR/size"));
-
-			overlay.AddImageFittedIntoRectangle(code, new iText.Kernel.Geom.Rectangle(x, box.GetHeight() - y - QRsize, QRsize, QRsize), false);
-			doc.Close();
-			pdf.Close();
-		}
-
-		//Zwraca tekst przetworzony na kod QR w postaci obrazu iText
-		//Argumenty:
-		//	text:	tekst, który ma być zakodowany w kodzie QR
-		//Procedura pomocnicza, dodana dla większej czytelności kodu
-		private static ImageData CreateQRCode(string text) 
-		{
-
-			QRCodeGenerator codeGenerator = new QRCodeGenerator();
-			QRCodeData codeData = codeGenerator.CreateQrCode(text, QRCodeGenerator.ECCLevel.Q);
-			QRCode code = new QRCode(codeData);
-			System.Drawing.Image img = code.GetGraphic(PixelsPerQRdot);
-			return ImageDataFactory.Create(img,null);
-		} 
-
 
 	}
 }

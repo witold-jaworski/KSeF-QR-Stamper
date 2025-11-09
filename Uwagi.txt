@@ -1,5 +1,5 @@
 GUI Package Manager wyświetla tylko najnowsze wersje pakietów.
-Aby dodać starszą wersję iText (7.2.5) użyłem polcenia w konsoli Package Manager:
+Aby dodać starszą wersję iText (7.2.5) użyłem polecenia w konsoli Package Manager:
 
 PM> Install-Package iText7 --Version 7.2.5
 

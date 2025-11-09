@@ -1,25 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Plik konfiguracyjny dla programu Stamper.exe  -->
 <config>
-
+	<!-- katalogi programu. NIGDY nie wstawiaj na końcu "\": -->
+	<source>..\..\Testy\pdfs</source> <!-- katalog ze źródłowymi plikami PDF -->
+	<result>..\..\Testy\results</result> <!-- katalog na pliki "ostemplowane" kodam QR -->
+	<stepfiles>..\..\Testy\logs</stepfiles> <!-- opcjonalny: katalog do szczegółowej komunikacji z programem wywołującym -->
+	
+	<!-- opcjonalnie: enkodowanie pliku wejściowego (wpisz, jeżeli nie jest to utf-8) -->
+	<encoding>windows-1250</encoding>
+	
+	<!-- PONIŻEJ DWIE SEKCJE OPISUJĄCE SPOSÓB UMIESZCZENIA ODPOWIEDNICH KODÓW QR NA FAKTURZE  -->
 	<!-- wszelkie współrzędne są w punktach, czyli 1/72 cala (to około 0.35mm). 
 	Polożenie jest podawane dla lewego górnego narożnika obszaru (prostokąta obejmujacego tekst, obrazu kodu QR)
 	Punkt 0,0 jest w lewym górnym narożniku strony.	Rozmiar pionowej strony A4 to 595x841 pt. 
 	Wartości w pt podawaj  zawsze jako liczby całkowite (tak ustawiłem parser tego pliku)
 	-->
-	
-	<label> <!-- Sczegóły linku z numerem KSeF na pierwszej stronie faktury -->
-		<x>345</x>
-		<y>127</y>
-		<font>Courier</font> <!-- Najlepiej uzywaj nazw standardowych fontów PDF: "Helvetica", "Courier", "Times-Roman", ... 
-							      Możliwe są także ich "mutacje": "Helvetica-Bold", "Courier-Bold", "Times-Bold". 
-								  Uwaga: jest różnica w nazwach czcionek pochylonych:. Są: "Courier-Oblique", "Helvetica-Oblique" i "Times-Italic" -->
-		<points>9</points> <!-- rozmiar czcionki -->
-	</label>
-	
-	<QR> <!-- Położenie i rozmiar kodu QR -->
-		<x>480</x>
-		<y>135</y>
-		<size>110</size> <!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
-	</QR>
+	<INVOICE>
+		<last-page>0</last-page> <!-- 0, jeżeli na pierwszej stronie, 1 jeżeli na ostatniej -->
+		<QR>
+			<!-- Kwadratowy kod QR -->
+			<x>80</x>
+			<y>65</y>
+			<size>110</size>
+			<!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
+		</QR>
+		<label>
+			<!-- Numer KSEF / OFFLINE -->
+			<font>Helvetica-Bold</font>
+			<!-- Najlepiej uzywaj nazw standardowych fontów PDF: "Helvetica", "Courier", "Times-Roman", ... 
+										Możliwe są także ich "mutacje": "Helvetica-Bold", "Courier-Bold", "Times-Bold". 
+										Uwaga: jest różnica w nazwach czcionek pochylonych:. 
+										Są: "Courier-Oblique", "Helvetica-Oblique" i "Times-Italic" -->
+			<points>8</points>
+			<!-- rozmiar czcionki -->
+			<yoffset>15</yoffset>
+			<!-- dodatkowe przesunięcie tekstu do dołu. Dostosuj do czcionki i ewentualnego zawinięcia tekstu -->
+		</label>
+	</INVOICE>
+	<CERTIFICATE>
+		<last-page>0</last-page>
+		<!-- 0, jeżeli na pierwszej stronie, 1 jeżeli na ostatniej -->
+		<QR>
+			<!-- Kwadratowy kod QR -->
+			<x>285</x>
+			<y>45</y>
+			<size>140</size>
+			<!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
+		</QR>
+		<label>
+			<!-- Numer KSEF / OFFLINE -->
+			<font>Helvetica-Bold</font>
+			<!-- Najlepiej uzywaj nazw standardowych fontów PDF: "Helvetica", "Courier", "Times-Roman", ... 
+										Możliwe są także ich "mutacje": "Helvetica-Bold", "Courier-Bold", "Times-Bold". 
+										Uwaga: jest różnica w nazwach czcionek pochylonych:. 
+										Są: "Courier-Oblique", "Helvetica-Oblique" i "Times-Italic" -->
+			<points>8</points>
+			<!-- rozmiar czcionki -->
+			<yoffset>5</yoffset> <!-- dodatkowe przesunięcie tekstu do dołu. Tutaj zawsze ejst tylko jedna linia, bo tekst jest stały -->
+		</label>
+	</CERTIFICATE>
 </config>

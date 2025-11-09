@@ -12,6 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -125,10 +126,38 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Stamp.cs" />
+    <Compile Include="StepfileLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Readme.md" />
+    <None Include="Testy\pdfs\FA_3_Przykład_1.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_10.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_11.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_12.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_13.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_14.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_15.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_16.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_17.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_18.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_19.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_2.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_20.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_21.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_22.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_23.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_24.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_25.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_3.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_4.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_5.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_6.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_7.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_8.pdf" />
+    <None Include="Testy\pdfs\FA_3_Przykład_9.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\QRCoder\QRCoder\QRCoder.csproj">
@@ -139,6 +168,36 @@
   <ItemGroup>
     <Content Include="Spis zmian.txt" />
     <Content Include="Stamper.xml" />
+    <Content Include="Testy\cmd.txt" />
+    <Content Include="Testy\xmls\FA_3_Przykład_1.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_10.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_11.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_12.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_13.xml" />
+    <Content Include="Testy\xmls\Fa_3_Przykład_14.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_15.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_16.xml" />
+    <Content Include="Testy\xmls\Fa_3_Przykład_17.xml" />
+    <Content Include="Testy\xmls\Fa_3_Przykład_18.xml" />
+    <Content Include="Testy\xmls\Fa_3_Przykład_19.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_2.xml" />
+    <Content Include="Testy\xmls\Fa_3_Przykład_20.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_21.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_22.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_23.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_24.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_25.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_3.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_4.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_5.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_6.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_7.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_8.xml" />
+    <Content Include="Testy\xmls\FA_3_Przykład_9.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Testy\logs\" />
+    <Folder Include="Testy\results\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

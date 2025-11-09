@@ -8,7 +8,18 @@ Implementacja pierwszej specyfikacji kodów QR wg dokumentacji API KSeF v. 1.5.
 
 2024-01-11
 wersja: 1.1.1
-Dodana para opcjonalnych argumentów [cfg "œcie¿ka do alternatywnego pliku konfiguracji"], która pozwala prze³¹czyæ siê na inny plik konfiguracji
+Dodana para opcjonalnych argumentów [config "œcie¿ka do alternatywnego pliku konfiguracji"], która pozwala prze³¹czyæ siê na inny plik konfiguracji
 
 2024-01-12
 Poprawka modyfikacji z 2024-01-11: dodany sta³y tekst "tu go sprawdzisz" gdy w parametrach nie podano numeru KSeF
+
+2025-08-15
+Adaptacja do KSeF API 2.0. Powa¿ne zmiany: teraz program oczekuje na wejœciu pliku z gotowymi tekstami url do zamiany na kody QR. 
+W przypadku, gdy faktura jest wystawiona OFFLINE, nanosi na fakturê tak¿e QR certyfikatu.
+
+2025-08-21
+Poprawka zwi¹zane z jednobajtowym enkodowaniem znaków w plikach tekstowych (np. "windows-1250").
+
+2025-09-13
+Dodatkowe argumenty linii poleceñ: œcie¿ki "source" i "result". Je¿eli któraœ z nich jest podana, nadpisuje ustawienie z pliku konfiguracji
+Do funkcji FullPath() dodane usuniêcie ew. backslasha z koñca œcie¿ki (bo Connector je zawsze doda do source i result)

@@ -23,6 +23,8 @@ namespace Stamper
 			gdzie:
 			<cmd>    - scieżka do plik poleceń. Opis formatu - patrz poniżej. To musi być pierwszy argument programu
 			config   - opcja, pozwalająca wskazać alternatywny plik *.xml z konfiguracją programu
+			source	 - opcjonalna ścieżka do źródłowych plików PDF (do 'ostemplowania'). Nadpisuje tę z pliku konfiguracji
+			result	 - opcjonalna ścieżka na wynikowe pliki PDF ('ostemplowane'). Nadpisuje tę z pliku konfiguracji
 			options  - opcjonalna lista pojedynczych flag, rozdzielanych średnikami.
 			sid      - opcja, unikalny identyfikator tego przebiegu. Wykorzystywany przez program wywołujący 
 			           do śledzenia postępu zadania.
@@ -67,15 +69,17 @@ namespace Stamper
 			try
 			{
 				progArgs = new Args(args); //Najpierw porzadek z argumentami:
-				//Uwzględnij ewentualną zmianę tej ścieżki w argumentach programu:
-				if(!progArgs.TryGetValue("config", out string	configPath))
+										   //Uwzględnij ewentualną zmianę tej ścieżki w argumentach programu:
+				if (!progArgs.TryGetValue("config", out string configPath)) 
 															configPath = AppContext.BaseDirectory + ConfigFileName;
+				//Załaduj konfigurację..
+				config.Load(FullPath(configPath));		
 
 				if (!progArgs.TryGetValue("source", out string srcPath))
 															srcPath = Cnf("source");
 
 				if (!progArgs.TryGetValue("result", out string dstPath))
-															srcPath = Cnf("result");
+															dstPath = Cnf("result");
 
 				//ewentualne opcje programu z linii poleceń (mogą być puste)
 				if (!progArgs.TryGetValue("options", out string options)) options = "";
@@ -84,17 +88,16 @@ namespace Stamper
 				//ewentualny identyfikator sesji dla loggera:
 				if (!progArgs.TryGetValue("sid", out string sid)) sid = "";
 
-				//Załaduj konfigurację..
-				config.Load(FullPath(configPath));
-
 
 				//Zainicjalizuj logger
 				log = new StepfileLogger(Cnf("stepfiles",""), sid, Cnf("encoding", "utf-8"));
 
 				//Przetwórz plik z poleceniami:
+				Boolean.TryParse(Cnf("RemoveSourcePdf", "false"), out bool removeSourcePdf); //Domyślnie - tylko czytamy źródłowe Pdf (nie usuwamy po przetworzeniu)
 				srcPath = FullPath(srcPath);
 				dstPath = FullPath(dstPath);
 				var commands = File.ReadAllLines(FullPath(progArgs["cmd"]), Encoding.GetEncoding(Cnf("encoding", "utf-8")));
+				
 				foreach (var line in commands)
 				{
 					var item = line.Split('\t'); //Pojedyncza linia, podzielona na elementy
@@ -103,6 +106,7 @@ namespace Stamper
 						Stamp($"{srcPath}\\{item[0]}", $"{dstPath}\\{item[0]}", item);
 						if (options.Contains(F_VERBOSE)) Console.WriteLine($"Oznaczono: {item[0]}\t{item[2]}");
 						log.LogSuccess(item[0],$"Oznaczono kodem QR dla '{item[2]}'");
+						if (removeSourcePdf) File.Delete($"{srcPath}\\{item[0]}");
 					}
 					catch (Exception e) 
 					{

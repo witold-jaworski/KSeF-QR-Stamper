@@ -21,5 +21,10 @@ W przypadku, gdy faktura jest wystawiona OFFLINE, nanosi na fakturê tak¿e QR cer
 Poprawka zwi¹zane z jednobajtowym enkodowaniem znaków w plikach tekstowych (np. "windows-1250").
 
 2025-09-13
+Wersja: 2.0.0
 Dodatkowe argumenty linii poleceñ: œcie¿ki "source" i "result". Je¿eli któraœ z nich jest podana, nadpisuje ustawienie z pliku konfiguracji
 Do funkcji FullPath() dodane usuniêcie ew. backslasha z koñca œcie¿ki (bo Connector je zawsze doda do source i result)
+
+2025-11-26
+Wersja: 2.0.1
+Do pliku konfiguracji dodana flaga 	<RemoveSourcePdf>. Domyœlnie - false. Je¿eli true, usuwa po przetworzeniu Ÿród³owy plik *.PDF.

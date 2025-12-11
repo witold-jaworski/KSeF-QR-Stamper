@@ -8,6 +8,9 @@
 	
 	<!-- opcjonalnie: enkodowanie pliku wejściowego (wpisz, jeżeli nie jest to utf-8) -->
 	<encoding>windows-1250</encoding>
+
+	<!-- opcjonalne: czy po naniesieniu kodu QR usuwać źródłowy plik PDF (o ile nie jest to jednocześnie plik wynikowy true/false -->
+	<RemoveSourcePdf>false</RemoveSourcePdf> 
 	
 	<!-- PONIŻEJ DWIE SEKCJE OPISUJĄCE SPOSÓB UMIESZCZENIA ODPOWIEDNICH KODÓW QR NA FAKTURZE  -->
 	<!-- wszelkie współrzędne są w punktach, czyli 1/72 cala (to około 0.35mm). 

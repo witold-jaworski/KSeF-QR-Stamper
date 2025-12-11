@@ -19,6 +19,10 @@ Spis treœci:
   To jedyny wymagany argument. Œcie¿kê mo¿na tak¿e podawaæ wzglêdem po³o¿enia *Stamper.exe*. Opis formatu tego pliku - patrz [poni¿ej](#format-pliku-wejsciowego).
 * **config**   
   Opcjonalny. Œcie¿ka do alternatywnego pliku \**.xml* z konfiguracj¹ programu. Mo¿e byæ podana wzglêdem *Stamper.exe*. Szczegó³y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
+* **source**   
+  Opcjonalny. Alternatywna œcie¿ka do folderu ze Ÿród³owymi plikami PDF. Mo¿e byæ podana wzglêdem *Stamper.exe*. Nadpisuje wartoœæ podan¹ w pliku konfiguracji. Szczegó³y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
+* **result**   
+  Opcjonalny. Alternatywna œcie¿ka do folderu na wynikowe pliki PDF. Mo¿e byæ podana wzglêdem *Stamper.exe*. Nadpisuje wartoœæ podan¹ w pliku konfiguracji. Szczegó³y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
 * **options**   
   Opcjonalny. Flagi programu. Je¿eli podajesz wiêcej ni¿ jedn¹ - rozdziel je œrednikiem. Aktualnie jest tylko jedna flaga - **verbose**. W³¹cza wyœwietlanie w konsoli komunikatu o przetworzeniu ka¿dej z faktur.
 * **sid**   
@@ -47,6 +51,9 @@ G³ówny element struktury XML konfiguracji nazywa siê **config**. Zawiera ustawie
 	
 	<!-- opcjonalnie: enkodowanie pliku wejœciowego (wpisz, je¿eli nie jest to utf-8) -->
 	<encoding>windows-1250</encoding>
+
+	<!-- opcjonalne: czy po naniesieniu kodu QR usuwaæ Ÿród³owy plik PDF (o ile nie jest to jednoczeœnie plik wynikowy true/false -->
+	<RemoveSourcePdf>false</RemoveSourcePdf> 
 
 	<INVOICE>
 	...

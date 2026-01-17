@@ -132,7 +132,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <None Include="Readme.md" />
+    <None Include="doc\Opis.md" />
     <None Include="Testy\pdfs\FA_3_Przykład_1.pdf" />
     <None Include="Testy\pdfs\FA_3_Przykład_10.pdf" />
     <None Include="Testy\pdfs\FA_3_Przykład_11.pdf" />

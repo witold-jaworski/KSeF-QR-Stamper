@@ -42,7 +42,7 @@ namespace Stamper
 		{
 			if (dirPath == "") return; //Nie mamy nic do roboty
 			fileName = Path.GetFileNameWithoutExtension(fileName) + (isDone? ".done" : ".fail");
-			File.WriteAllText(Path.Combine(dirPath, fileName), message, enc);
+			File.AppendAllText(Path.Combine(dirPath, fileName), message, enc);
 		}
 
 		//Zapisują wiadomość message do pliku o podanej nazwie i rozszerzeniu ".done"

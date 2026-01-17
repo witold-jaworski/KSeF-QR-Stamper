@@ -5,12 +5,10 @@ Narzêdzie linii poleceñ, nanosz¹ce na dokumenty PDF faktur kody QR wymagane prze
 Spis treœci:
 
 <!--TOC-->
-
-* [Argumenty linii poleceñ](#argumenty-linii-polecen)
-* [Plik konfiguracji programu](#plik-konfiguracji-programu)
-* [Format pliku wejœciowego](#format-pliku-wejsciowego)
-* [Kronikowanie "krok po kroku"](#kronikowanie-krok-po-kroku)
-
+  - [Argumenty linii poleceñ](#argumenty-linii-polecen)
+  - [Plik konfiguracji programu](#plik-konfiguracji-programu)
+  - [Format pliku wejœciowego](#format-pliku-wejsciowego)
+  - [Kronikowanie "krok po kroku"](#kronikowanie-krok-po-kroku)
 <!--/TOC-->
 
 ## Argumenty linii poleceñ
@@ -23,6 +21,8 @@ Spis treœci:
   Opcjonalny. Alternatywna œcie¿ka do folderu ze Ÿród³owymi plikami PDF. Mo¿e byæ podana wzglêdem *Stamper.exe*. Nadpisuje wartoœæ podan¹ w pliku konfiguracji. Szczegó³y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
 * **result**   
   Opcjonalny. Alternatywna œcie¿ka do folderu na wynikowe pliki PDF. Mo¿e byæ podana wzglêdem *Stamper.exe*. Nadpisuje wartoœæ podan¹ w pliku konfiguracji. Szczegó³y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
+* **ccopy**   
+  Opcjonalny. Œcie¿ka do dodatkowego folderu na kopie wynikowych plików PDF. Takie "duplikaty" rezultatu s¹ potrzebna niektórym u¿ytkownikom programu do dalszego przetwarzania. Mo¿e byæ podana wzglêdem *Stamper.exe*. Nadpisuje wartoœæ podan¹ w pliku konfiguracji. Szczegó³y - por. sekcja ["Plik konfiguracji"](#plik-konfiguracji-programu).
 * **options**   
   Opcjonalny. Flagi programu. Je¿eli podajesz wiêcej ni¿ jedn¹ - rozdziel je œrednikiem. Aktualnie jest tylko jedna flaga - **verbose**. W³¹cza wyœwietlanie w konsoli komunikatu o przetworzeniu ka¿dej z faktur.
 * **sid**   
@@ -69,6 +69,8 @@ Elementy obowi¹zkowe **config** to:
 * **source** to folder ze Ÿród³owymi plikami PDF ("do ostemplowania" kodami QR).
 * **result** to folder na przetworzone ("ostemplowane") pliki PDF.
 * sekcje **INVOICE** i **CERTIFICATE**.
+>[!TIP]
+>Zwróæ uwagê, ¿e w przedstawionym powy¿ej pliku konfiguracji nie ma katalogu **ccopy**. To parametr opcjonalny, gdy go nie podano, to program nie tworzy duplikatów wynikowych plików PDF.
 
 Sk³adnia sekcji **INVOICE** i **CERTIFICATE** jest identyczna. Opisuj¹ po³o¿enie i rozmiar kodu QR na pierwszej lub ostatniej stronie dokumentu PDF. Poni¿ej kodu QR znajduje siê etykieta, o podanej w konfiguracji czcionce. Poni¿ej przyk³ad definicji wymaganego przez KSeF kodu QR:
 
@@ -79,7 +81,9 @@ Sk³adnia sekcji **INVOICE** i **CERTIFICATE** jest identyczna. Opisuj¹ po³o¿enie
 	Wartoœci w pt podawaj  zawsze jako liczby ca³kowite (tak ustawi³em parser tego pliku)
 	-->
 	<INVOICE>
-		<last-page>0</last-page> <!-- 0, je¿eli na pierwszej stronie, 1 je¿eli na ostatniej -->
+		<last-page>0</last-page> <!--	0, je¿eli na pierwszej stronie, 
+										1 je¿eli na ostatniej, 
+										-1 je¿eli ma do³¹czyæ dodatkow¹, ostatni¹ stronê -->
 		<QR>
 			<!-- Kwadratowy kod QR -->
 			<x>80</x>
@@ -101,7 +105,9 @@ Sk³adnia sekcji **INVOICE** i **CERTIFICATE** jest identyczna. Opisuj¹ po³o¿enie
 	</INVOICE>
 ```
 
-Sekcja **CERTIFICATE** opisuje drugi kod QR, który ma byæ umieszczany tylko dla faktu wystawionych w trybie OFFLINE. Jej sk³adnia jest identyczna jak **INVOICE**. (Pamiêtaj tylko, ¿e kody QR certyfikatów powinny byæ wiêksze, bo ich url s¹ du¿o d³u¿sze).
+Sekcja **CERTIFICATE** opisuje drugi kod QR, który ma byæ umieszczany tylko dla faktu wystawionych w trybie OFFLINE. Jej sk³adnia jest identyczna jak **INVOICE**. Pamiêtaj tylko, ¿e kody QR certyfikatów powinny byæ wiêksze, bo ich url s¹ du¿o d³u¿sze, 
+>[!TIP]
+>Je¿eli w sekcji **INVOICE** wymuszasz now¹ stronê (_last-page_=-1), to nie rób tego ponownie w sekcji **CERTIFICATE** (ustaw tam _last-page_=1).
 
 ## Format pliku wejœciowego
 <a name="format-pliku-wejsciowego"></a>

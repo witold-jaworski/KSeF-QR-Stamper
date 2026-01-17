@@ -28,3 +28,12 @@ Do funkcji FullPath() dodane usuniêcie ew. backslasha z koñca œcie¿ki (bo Connec
 2025-11-26
 Wersja: 2.0.1
 Do pliku konfiguracji dodana flaga 	<RemoveSourcePdf>. Domyœlnie - false. Je¿eli true, usuwa po przetworzeniu Ÿród³owy plik *.PDF.
+
+2025-12-11
+Wersja: 2.0.2
+Rozszerzone znaczenie flagi <last-page> z pliku konfiguracji. Je¿eli = -1, to odp. kod QR jest wstawiany na dodatkowej stronie, do³¹czonej do koñca dokumentu.
+
+2026-01-17
+Wersja: 2.0.3
+Dodatkowy parametr ccopy (mo¿e byæ i w linii poleceñ, i w pliku konfiguracji). Opcjonalny folder, do którego s¹ kopiowane "ostemplowane" w tym przebiegu
+pliki PDF. Dodany, bo klientom by³ potrzebny drugi katalog, z którego mogliby "podbieraæ" nowo przetworzone pliki.

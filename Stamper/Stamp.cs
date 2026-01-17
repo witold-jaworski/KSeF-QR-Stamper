@@ -39,8 +39,8 @@ namespace Stamper
 			Document doc = new Document(pdf);
 
 			PlaceQR("INVOICE", pdf, doc, item[1], item[2]); //Kod QR I - zawsze
-			if(item.Length > 3) 
-							PlaceQR("CERTIFICATE",pdf, doc,	item[3], "CERTYFIKAT"); //Kod QR II - gdy OFFLINE.
+			if (item.Length > 3)
+				PlaceQR("CERTIFICATE", pdf, doc, item[3], "CERTYFIKAT"); //Kod QR II - gdy OFFLINE.
 			doc.Close();
 			pdf.Close();
 		}
@@ -57,15 +57,23 @@ namespace Stamper
 			int x;
 			int y;
 			int page = 1;
-			bool lastPage = (Cnf($"{QrType}/last-page") == "1");
+			Int32.TryParse(Cnf($"{QrType}/last-page"), out int lastPage);
 
 			ImageData code = CreateQRCode(QRtext);
 
 			float QRsize = Int32.Parse(Cnf($"{QrType}/QR/size"));
 			x = Int32.Parse(Cnf($"{QrType}/QR/x"));
 			y = Int32.Parse(Cnf($"{QrType}/QR/y"));
+			
 
-			if (lastPage) page = pdf.GetNumberOfPages();
+			if (lastPage < 0) //Dodaj nową stronę
+			{
+				doc.Add(new AreaBreak(AreaBreakType.LAST_PAGE)); //Pojęcia nie mam, dlaczego musi wystąpić ta linia.
+				doc.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+				doc.Add(new Paragraph("Krajowy System e-Faktur:")); //i musi być dodany niepusty paragraf, bo nie będzie strony!
+			}
+
+			if (lastPage != 0) page = pdf.GetNumberOfPages();
 			var box = pdf.GetPage(page).GetPageSize();
 
 			if (label != "")

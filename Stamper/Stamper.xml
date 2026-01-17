@@ -4,6 +4,7 @@
 	<!-- katalogi programu. NIGDY nie wstawiaj na końcu "\": -->
 	<source>..\..\Testy\pdfs</source> <!-- katalog ze źródłowymi plikami PDF -->
 	<result>..\..\Testy\results</result> <!-- katalog na pliki "ostemplowane" kodam QR -->
+	<!-- <ccopy>..\..\Testy\copies</ccopy>  opcjonalny: katalog na drgie kopie plików wynikowych (potrzebne w naszym workflow, może innym tez się przyda) -->
 	<stepfiles>..\..\Testy\logs</stepfiles> <!-- opcjonalny: katalog do szczegółowej komunikacji z programem wywołującym -->
 	
 	<!-- opcjonalnie: enkodowanie pliku wejściowego (wpisz, jeżeli nie jest to utf-8) -->
@@ -19,12 +20,12 @@
 	Wartości w pt podawaj  zawsze jako liczby całkowite (tak ustawiłem parser tego pliku)
 	-->
 	<INVOICE>
-		<last-page>0</last-page> <!-- 0, jeżeli na pierwszej stronie, 1 jeżeli na ostatniej -->
+		<last-page>0</last-page> <!-- 0, jeżeli na pierwszej stronie, 1 jeżeli na ostatniej, -1 jeżeli na dołączonej -->
 		<QR>
 			<!-- Kwadratowy kod QR -->
 			<x>80</x>
-			<y>65</y>
-			<size>110</size>
+			<y>85</y>
+			<size>90</size>
 			<!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
 		</QR>
 		<label>
@@ -46,8 +47,8 @@
 		<QR>
 			<!-- Kwadratowy kod QR -->
 			<x>285</x>
-			<y>45</y>
-			<size>140</size>
+			<y>70</y>
+			<size>115</size>
 			<!-- QR code jest kwadratem. Ten rozmiar obejmuje także 5% białe marginesy wokół kwadratu kodu -->
 		</QR>
 		<label>

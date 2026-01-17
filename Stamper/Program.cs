@@ -25,6 +25,7 @@ namespace Stamper
 			config   - opcja, pozwalająca wskazać alternatywny plik *.xml z konfiguracją programu
 			source	 - opcjonalna ścieżka do źródłowych plików PDF (do 'ostemplowania'). Nadpisuje tę z pliku konfiguracji
 			result	 - opcjonalna ścieżka na wynikowe pliki PDF ('ostemplowane'). Nadpisuje tę z pliku konfiguracji
+			ccopy	 - opcjonalna dodatkowa ścieżka na wynikowe pliki PDF (duplikaty plików kopiowanych do <result>)
 			options  - opcjonalna lista pojedynczych flag, rozdzielanych średnikami.
 			sid      - opcja, unikalny identyfikator tego przebiegu. Wykorzystywany przez program wywołujący 
 			           do śledzenia postępu zadania.
@@ -80,6 +81,9 @@ namespace Stamper
 
 				if (!progArgs.TryGetValue("result", out string dstPath))
 															dstPath = Cnf("result");
+				
+				if (!progArgs.TryGetValue("ccopy", out string copyPath))
+															copyPath = Cnf("ccopy",String.Empty); //Ścieżka opcjonalna
 
 				//ewentualne opcje programu z linii poleceń (mogą być puste)
 				if (!progArgs.TryGetValue("options", out string options)) options = "";
@@ -96,6 +100,8 @@ namespace Stamper
 				Boolean.TryParse(Cnf("RemoveSourcePdf", "false"), out bool removeSourcePdf); //Domyślnie - tylko czytamy źródłowe Pdf (nie usuwamy po przetworzeniu)
 				srcPath = FullPath(srcPath);
 				dstPath = FullPath(dstPath);
+				if (copyPath != String.Empty) copyPath = FullPath(copyPath);
+
 				var commands = File.ReadAllLines(FullPath(progArgs["cmd"]), Encoding.GetEncoding(Cnf("encoding", "utf-8")));
 				
 				foreach (var line in commands)
@@ -107,6 +113,11 @@ namespace Stamper
 						if (options.Contains(F_VERBOSE)) Console.WriteLine($"Oznaczono: {item[0]}\t{item[2]}");
 						log.LogSuccess(item[0],$"Oznaczono kodem QR dla '{item[2]}'");
 						if (removeSourcePdf) File.Delete($"{srcPath}\\{item[0]}");
+						if (copyPath != String.Empty) //i jeszcze skopiuj "na bok"
+						{
+							File.Copy($"{dstPath}\\{item[0]}", $"{copyPath}\\{item[0]}", overwrite: true);
+							log.LogSuccess(item[0], $"\r\nDrugą kopię umieszczono w '{copyPath}'");
+						}
 					}
 					catch (Exception e) 
 					{

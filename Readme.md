@@ -4,4 +4,4 @@ Narzędzie linii poleceń, nanoszące na dokumenty PDF faktur kody QR wymagane p
 
 Ten program, choć napisałem go na własne potrzeby, jest na tyle ogólny, że może się przydać innym. Udostępniony na takiej otwartej licencji, jakiej wymaga bezpłatne użycie biblioteki iText.
 
-Patrz [szczegółowy opis]([Stamper/Readme.md](Stamper/doc/Opis.md)).
+Patrz [szczegółowy opis](Stamper/doc/Opis.md).
